@@ -1,0 +1,36 @@
+<div id="pane_<%= f.object.object_id %>" class="mt-6">
+  <%# TODO this HR styling is not working because of tailwind preflight overriding the utility classes %>
+  <hr class="border-t-2 border-solid border-red-900 my-4">
+  <div class="flex gap-3">
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between mb-1">
+        <h4 class="text-sm font-semibold text-gray-700">
+          <%= Spina::Parts::StreamField.component_types.key(f.object.part_type) || f.object.part_type.to_s.demodulize %>
+        </h4>
+        <%= button_tag "Delete", type: :button, class: "btn btn-default bg-transparent hover:bg-white hover:text-red-500 h-8 px-3", data: {action: "stream-field#removeFields", id: "pane_#{f.object.object_id}"} %>
+      </div>
+
+      <%= f.hidden_field :part_type %>
+
+      <%
+        part_type_class = f.object.part_type.presence || "Spina::Parts::Markdown"
+        content_part = f.object.parts&.first || part_type_class.constantize.new(name: "content")
+      %>
+
+      <%= f.fields_for :parts, [content_part] do |ff| %>
+        <%= ff.hidden_field :type, value: ff.object.class %>
+        <%= ff.hidden_field :name %>
+        <%= render "spina/admin/parts/#{parts_partial_namespace(ff.object.class.to_s)}/form", f: ff %>
+      <% end %>
+    </div>
+
+    <div class="flex flex-col justify-center gap-1 shrink-0">
+      <%= button_tag type: :button, class: "btn btn-default bg-transparent hover:bg-white h-8 px-2", title: "Move up", data: {action: "stream-field#moveUp", id: "pane_#{f.object.object_id}"} do %>
+        <%= heroicon('chevron-up', style: :mini, class: "w-4 h-4") %>
+      <% end %>
+      <%= button_tag type: :button, class: "btn btn-default bg-transparent hover:bg-white h-8 px-2", title: "Move down", data: {action: "stream-field#moveDown", id: "pane_#{f.object.object_id}"} do %>
+        <%= heroicon('chevron-down', style: :mini, class: "w-4 h-4") %>
+      <% end %>
+    </div>
+  </div>
+</div>
