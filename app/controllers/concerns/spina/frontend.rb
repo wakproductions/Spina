@@ -40,6 +40,7 @@ module Spina
 
     def page_by_locale(locale)
       I18n.with_locale(locale) do
+        puts "MATERIALIZED_PATH: #{spina_request_path}"
         Page.i18n.find_by!(materialized_path: spina_request_path)
       end
     end
